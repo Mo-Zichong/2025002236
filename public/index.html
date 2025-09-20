@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>区块链抽签演示平台</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="app-container">
+    <aside id="sidebar">
+      <h1>抽奖奖项</h1>
+      <ul id="prize-list">
+        <!-- 奖项列表可在此自定义，每项可以包含名称和数量 -->
+        <li data-level="special"><span class="prize-name">特等奖 索尼蓝牙耳机</span><span class="prize-count" id="special-count">0/1</span></li>
+        <li data-level="first"><span class="prize-name">一等奖 阿伯丁小熊</span><span class="prize-count" id="first-count">0/5</span></li>
+        <li data-level="second"><span class="prize-name">二等奖 文化衫</span><span class="prize-count" id="second-count">0/5</span></li>
+        <li data-level="third"><span class="prize-name">三等奖 咖啡厅优惠券</span><span class="prize-count" id="third-count">0/20</span></li>
+      </ul>
+      <!-- 中奖结果展示区域：抽奖后在此列出每轮中奖名单 -->
+      <div id="results-container">
+        <h2>中奖名单</h2>
+        <ul id="result-list"></ul>
+      </div>
+      <div id="controls">
+        <button id="start-draw-btn">开始抽奖</button>
+        <!-- 重抽奖按钮已移除 -->
+        <button id="export-btn">导出抽奖结果</button>
+        <button id="toggle-admin-btn">管理员面板</button>
+      </div>
+    </aside>
+    <main id="main-view">
+      <div id="sphere-wrapper">
+        <div id="sphere"></div>
+      </div>
+      <!-- 抽奖结束后展示中奖者的浮层 -->
+      <div id="winner-overlay" class="hidden"></div>
+    </main>
+  </div>
+  <!-- 管理员面板 -->
+  <div id="admin-panel" class="hidden">
+    <h2>管理员面板</h2>
+    <section class="admin-section">
+      <h3>创建场次</h3>
+      <label>场次名称：<input type="text" id="admin-session-name" placeholder="如：年会抽奖"></label>
+      <label>随机种子：<input type="text" id="admin-seed" placeholder="随机字符串"></label>
+      <button id="admin-gen-seed" title="从网易天玄链获取随机种子">生成随机种子</button>
+      <small class="hint important" id="seed-note">本平台使用<strong>网易天玄链</strong>生成随机种子。请务必记住生成的随机种子，并在开奖前<strong>绝对不能暴露</strong>。完成场次创建后，请立即保存名单并导入参与者。</small>
+      <button id="admin-create-session">创建场次</button>
+    </section>
+    <section class="admin-section">
+      <h3>场次选择与报名</h3>
+      <label>选择场次：<select id="admin-session-select"></select></label>
+      <!-- 参与者导入：支持单个手动报名和批量导入 -->
+      <label>参与者标识：<input type="text" id="admin-user" placeholder="如：user1"></label>
+      <button id="admin-enter">报名</button>
+      <label>批量导入参与者：<input type="file" id="admin-import-file" accept=".csv" /></label>
+      <button id="admin-import-btn">导入</button>
+      <!-- 加载参与者按钮已移除，参与者将在切换场次或导入后自动加载 -->
+    </section>
+    <section class="admin-section">
+      <button id="admin-close">关闭面板</button>
+    </section>
+
+    <section class="admin-section" id="admin-instructions">
+      <h3>使用指南</h3>
+      <ol>
+        <li>创建场次：填写场次名称并点击“生成随机种子”按钮，从天玄链获取一串随机字符串自动填入。若无法连接天玄链可自行输入随机种子（建议 8～16 位或更长，由数字和大小写字母组成）。点击“创建场次”完成创建。系统只会保存随机种子的 SHA‑256 哈希，原始种子请妥善保管并不要提前泄露。</li>
+        <li>报名参与：选择要操作的场次，可以通过下方“参与者标识”输入单个报名，也可以通过“批量导入参与者”上传 CSV 或 TXT 文件。导入文件需为纯文本格式，每行一个参与者标识（第一行可为表头），系统将自动过滤空行和去除重复标识。</li>
+        <li>开始抽奖：所有参与者报名完成后，关闭管理员面板回到主界面，点击“开始抽奖”按钮并输入保存的随机种子。系统会先验证种子，然后按照<span style="white-space:nowrap">三等奖→二等奖→一等奖→特等奖</span>的顺序分轮次抽奖。</li>
+        <li>抽奖过程：每次点击抽奖按钮会抽取当前轮次的全部中奖者并高亮显示，按钮文本会提示下一轮抽奖；抽完全部奖项后按钮将禁用。</li>
+        <li>导出结果：点击“导出抽奖结果”可下载包含所有参与者和各档次中奖者的 JSON 文件。可使用记事本或 Excel 打开查看。</li>
+      </ol>
+    </section>
+  </div>
+  <script src="/sphere.js"></script>
+</body>
+</html>
